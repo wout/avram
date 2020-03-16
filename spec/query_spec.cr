@@ -693,27 +693,38 @@ describe Avram::Query do
   end
 
   describe "update" do
-    it "updates all records when wheres are added" do
-      UserBox.create &.name("Steve")
-      UserBox.create &.name("Nick")
+    it "updates records when wheres are added" do
+      UserBox.create &.available_for_hire(false)
+      UserBox.create &.available_for_hire(false)
 
-      result = ChainedQuery.new.delete
+      updated_count = ChainedQuery.new.update(available_for_hire: true)
 
-      result.should eq 1
-      users = ChainedQuery.new
+      updated_count.should eq(2)
+      results = ChainedQuery.new.results
+      results.size.should eq(2)
+      results.all?(&.available_for_hire).should be_true
     end
 
     it "updates some records when wheres are added" do
-      UserBox.create &.name("Steve")
-      UserBox.create &.name("Nick")
+      helen = UserBox.create &.available_for_hire(false).name("Helen")
+      kate = UserBox.create &.name(false).name("Kate")
 
-      result = ChainedQuery.new.name("Steve").delete
+      updated_count = ChainedQuery.new.name("Helen").update(available_for_hire: true)
 
-      result.should eq 1
-      users = ChainedQuery.new
+      updated_count.should eq 1
+      helen.reload.available_for_hire.should be_true
+      kate.reload.available_for_hire.should be_false
     end
 
     it "does not update other columns unless given explicitly" do
+      richard = UserBox.create &.name("Richard").nickname("Rich")
+
+      updated_count = ChainedQuery.new.update_all(nickname: nil)
+
+      updated_count.should eq 1
+      richard = richar.reload
+      richard.nickname.should be_nil
+      richard.name.should eq("Richard")
     end
   end
 
