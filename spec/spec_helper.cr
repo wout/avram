@@ -13,6 +13,12 @@ Spec.before_each do
   TestDatabase.truncate
 end
 
+logger = Dexter::Logger.new(STDERR, level: Logger::Severity::ERROR)
+
+Avram.configure do |settings|
+  settings.logger = logger
+end
+
 class SampleBackupDatabase < Avram::Database
 end
 
