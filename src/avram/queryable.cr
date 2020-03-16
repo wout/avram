@@ -93,6 +93,12 @@ module Avram::Queryable(T)
     end
   end
 
+  def update(**changes) : Int64
+    database.run do |db|
+      db.exec(query.statement_for_update(changes, return_columns: false), args: query.args_for_update(changes)).rows_affected
+    end
+  end
+
   def join(join_clause : Avram::Join::SqlClause) : self
     query.join(join_clause)
     self

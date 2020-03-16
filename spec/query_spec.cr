@@ -707,7 +707,7 @@ describe Avram::Query do
 
     it "updates some records when wheres are added" do
       helen = UserBox.create &.available_for_hire(false).name("Helen")
-      kate = UserBox.create &.name(false).name("Kate")
+      kate = UserBox.create &.available_for_hire(false).name("Kate")
 
       updated_count = ChainedQuery.new.name("Helen").update(available_for_hire: true)
 
@@ -719,10 +719,10 @@ describe Avram::Query do
     it "does not update other columns unless given explicitly" do
       richard = UserBox.create &.name("Richard").nickname("Rich")
 
-      updated_count = ChainedQuery.new.update_all(nickname: nil)
+      updated_count = ChainedQuery.new.update(nickname: nil)
 
       updated_count.should eq 1
-      richard = richar.reload
+      richard = richard.reload
       richard.nickname.should be_nil
       richard.name.should eq("Richard")
     end
